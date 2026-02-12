@@ -5,43 +5,53 @@ import java.util.StringTokenizer;
 
 public class Solution {
 	
-	static int[] rooms = new int[1000*1000+1];
+	static int N, tc;
+	static int len, maxLen, roomNum, minNum;
+	
+	static final int[] dr = {-1,1,0,0};
+	static final int[] dc = {0,0,-1,1};
+	
+	static boolean inRange (int r, int c) { 
+		return r>=0 && r<N && c>=0 && c<N;
+	}
+	
+	static int[][] rooms = new int[1001][1001];
+	static int[][] visited = new int[1001][1001];
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		StringBuilder output = new StringBuilder();
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int T = Integer.parseInt(br.readLine());
-		for (int tc=1; tc<=T; tc++) {
-			int N = Integer.parseInt(br.readLine());
+		for (tc=1; tc<=T; tc++) {
+			N = Integer.parseInt(br.readLine());
 			
 			for (int i=0; i<N; i++) {
 				StringTokenizer st = new StringTokenizer(br.readLine());
 				for (int j=0; j<N; j++) {
-					int num = Integer.parseInt(st.nextToken());
-					rooms[num] = i*10000 + j;
+					rooms[i][j] = Integer.parseInt(st.nextToken());
 				}
 			}
 			
-			int len = 1;
-			int maxLen = 1;
-			int minNum = Integer.MAX_VALUE;
+			maxLen = 0;
+			minNum = Integer.MAX_VALUE;
 			
-			for (int i=1; i<N*N; i++) {
-				int r = rooms[i]/10000;
-				int c = rooms[i]%10000;
-				
-				int nr = rooms[i+1]/10000;
-				int nc = rooms[i+1]%10000;
-				
-				if (Math.abs(nr-r) + Math.abs(nc-c) == 1) {
-					len++;
-				} else {
-					len = 1;
-				}
-				
-				if (maxLen < len) {
-					maxLen = len;
-					minNum = i+2-len; 
+			for (int i=0; i<N; i++) {
+				for (int j=0; j<N; j++) {
+					
+					if (visited[i][j]==tc) continue;
+					
+					roomNum = rooms[i][j];
+					len = 0;
+					
+					dfs(i,j);
+					
+					if (maxLen == len) {
+						minNum = Math.min(roomNum, minNum);
+					}
+					else if (maxLen < len) {
+						maxLen = len;
+						minNum = roomNum;
+					}
 				}
 			}
 			
@@ -50,5 +60,23 @@ public class Solution {
 			
 		}
 		System.out.println(output);
+	}
+	
+	static void dfs (int r, int c) {
+		len++;
+		visited[r][c] = tc;
+		roomNum = Math.min(roomNum, rooms[r][c]);
+		
+		for (int i=0; i<4; i++) {
+			int nr = r + dr[i];
+			int nc = c + dc[i];
+			
+			if (!inRange(nr, nc)) continue;
+			if (visited[nr][nc]==tc) continue;
+			
+			if (Math.abs(rooms[nr][nc]-rooms[r][c])==1) {
+				dfs(nr, nc);
+			}
+		}
 	}
 }
