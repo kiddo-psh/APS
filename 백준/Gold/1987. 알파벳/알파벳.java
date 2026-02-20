@@ -2,13 +2,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-
+/*
+ * 메모리: 14,888 kb
+ * 실행시간: 852 ms
+ */
 public class Main {
 	static int R, C, answer;
 	static char[][] board;
-	static int[] visited = new int[26];
 	
-	static void dfs(int r, int c, int count) {
+	static void dfs(int r, int c, int count, int used) {
 		answer = Math.max(count, answer);
 		
 		for (int d=0; d<4; d++) {
@@ -16,11 +18,9 @@ public class Main {
 			int nc = c + dc[d];
 			
 			if (!inRange(nr, nc)) continue;
-			if (visited[board[nr][nc]-'A']>0) continue;
+			if ((used & 1<<board[nr][nc]-'A') != 0) continue;
 			
-			visited[board[nr][nc]-'A']++;
-			dfs (nr, nc, count+1);
-			visited[board[nr][nc]-'A']--;
+			dfs (nr, nc, count+1, used | 1<<board[nr][nc]-'A');
 		}
 	}
 	
@@ -42,8 +42,7 @@ public class Main {
 			board[i] = br.readLine().toCharArray();
 		}
 		
-		visited[board[0][0]-'A']++;
-		dfs(0, 0, 1);
+		dfs(0, 0, 1, 1<<board[0][0]-'A');
 		
 		System.out.println(answer);
 	}
