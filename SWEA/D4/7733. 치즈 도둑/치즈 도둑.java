@@ -4,14 +4,17 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
-
+/*
+ * 메모리: 96,064 kb
+ * 실행시간: 292 ms
+ */
 public class Solution {
 	static int N, t, answer;
 	static int[][] cheese;
 	static boolean[][] visited;
 	static boolean[][] temp;
-	static Queue<int[]> q = new LinkedList<>();
 	
+	// t일차 치즈 먹기
 	static void eat(int t) {
 		for (int i=0; i<N; i++) {
 			for (int j=0; j<N; j++) {
@@ -22,6 +25,7 @@ public class Solution {
 		}
 	}
 	
+	// 치즈 덩어리 수 세기
 	static int count() {
 		for(int i=0; i<N; i++) temp[i] = visited[i].clone();
 		
@@ -29,7 +33,7 @@ public class Solution {
 		for (int i=0; i<N; i++) {
 			for (int j=0; j<N; j++) {
 				if (temp[i][j]) continue;
-				bfs(i, j);
+				dfs(i, j);
 				cnt++;
 			}
 		}
@@ -37,28 +41,19 @@ public class Solution {
 		return cnt;
 	}
 	
-	static void bfs(int r, int c) {
+	// 치즈 덩어리 방문 체크 
+	static void dfs(int r, int c) {
 		temp[r][c] = true;
-		q.clear();
-		q.offer(new int[] {r,c});
 		
-		while(!q.isEmpty()) {
-			int[] cur = q.poll();
-			int cr = cur[0];
-			int cc = cur[1];
+		for (int d=0; d<4; d++) {
+			int nr = r + dr[d];
+			int nc = c + dc[d];
 			
-			for (int d=0; d<4; d++) {
-				int nr = cr + dr[d];
-				int nc = cc + dc[d];
-				
-				if (!inRange(nr,nc)) continue;
-				if (temp[nr][nc]) continue;
-				
-				temp[nr][nc] = true;
-				q.offer(new int[] {nr,nc});
-			}
+			if (!inRange(nr, nc)) continue;
+			if (temp[nr][nc]) continue;
+			
+			dfs(nr, nc);
 		}
-		
 	}
 	
 	static boolean inRange(int r, int c) {
