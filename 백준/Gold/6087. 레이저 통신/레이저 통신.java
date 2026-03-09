@@ -1,7 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
@@ -9,6 +10,7 @@ public class Main {
 	static int W,H;
 	static char[][] map;
 	static int[][][] reflect;
+	
 	static final int[] dr = {-1,1,0,0};
 	static final int[] dc = {0,0,-1,1};
 	
@@ -16,16 +18,14 @@ public class Main {
 		return r>=0 && r<H && c>=0 && c<W;
 	}
 	
-	static PriorityQueue<Node> pq = new PriorityQueue<>();
+	static Deque<Node> dq = new ArrayDeque<>();
 	
-	static class Node implements Comparable<Node> {
-		int r, c, dir, reflected;
-		Node (int r, int c, int dir, int reflected) {
-			this.r = r; this.c = c; 
-			this.dir=dir; this.reflected = reflected;
-		}
-		public int compareTo(Node o) {
-			return this.reflected - o.reflected;
+	static class Node {
+		int r, c, dir;
+		Node (int r, int c, int dir) {
+			this.r = r; 
+			this.c = c; 
+			this.dir=dir; 
 		}
 	}
 	
@@ -38,8 +38,7 @@ public class Main {
 		map = new char[H][W];
 		reflect = new int[H][W][4];
 		
-		Node start = new Node(-1,-1, -1, -1);
-		Node end = new Node(-1,-1, -1, -1);
+		Node end = new Node(-1,-1, -1);
 		
 		boolean flag = false;
 		
@@ -52,8 +51,10 @@ public class Main {
 					reflect[i][j][d] = Integer.MAX_VALUE;
 				
 				if (map[i][j]=='C' && !flag) {
-					start.r = i;
-					start.c = j;
+					for (int d=0; d<4; d++) {
+						dq.offer(new Node(i,j,d));
+						reflect[i][j][d] = 0;
+					}
 					flag = true;
 				} else if (map[i][j]=='C' && flag) {
 					end.r = i;
@@ -62,30 +63,35 @@ public class Main {
 			}
 		}
 		
-		pq.offer(start);
-		for (int d=0; d<4; d++) reflect[start.r][start.c][d] = 0;
-		
-		while(!pq.isEmpty()) {
-			Node cur = pq.poll();
-			int cr = cur.r, cc = cur.c;
+		while(!dq.isEmpty()) {
+			Node cur = dq.poll();
 			
 			for (int d=0; d<4; d++) {
-				int nr = cr+dr[d], nc = cc+dc[d];
-				int nReflect = (cur.dir != d) ? cur.reflected+1 : cur.reflected;
+				int nr = cur.r + dr[d];
+				int nc = cur.c + dc[d];
 				
 				if (!inRange(nr,nc)) continue;
 				if (map[nr][nc] == '*') continue;
-				if (reflect[nr][nc][d] <= nReflect) continue;
 				
-				reflect[nr][nc][d] = nReflect;
-				Node next = new Node(nr, nc, d, nReflect);
-				pq.offer(next);
+				int cost = reflect[cur.r][cur.c][cur.dir];
+				if (cur.dir != d) cost++;
+				
+				if (reflect[nr][nc][d] <= cost) continue;
+				
+				reflect[nr][nc][d] = cost;
+				
+				if (cur.dir == d) {
+					dq.addFirst(new Node(nr,nc,d));
+				} else {
+					dq.addLast(new Node(nr,nc,d));
+				}
 			}
 		}
 		int answer = Integer.MAX_VALUE;
 		for (int d=0; d<4; d++) {
-			answer = Math.min(reflect[end.r][end.c][d], answer);
+			answer = Math.min(answer, reflect[end.r][end.c][d]);
 		}
+		
 		System.out.println(answer);
 		br.close();
 	}
