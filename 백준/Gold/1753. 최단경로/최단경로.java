@@ -4,34 +4,65 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
+
 public class Main {
-	static class Edge implements Comparable<Edge>{
+	static class Edge {
 		int to, w;
-		Edge(int to, int w) {this.to=to; this.w=w;}
-		
-		public int compareTo(Edge o) {
-			return this.w - o.w;
+		Edge(int to, int w) {
+			this.to=to; this.w=w;
 		}
 	}
 	
-	static PriorityQueue<Edge> pq = new PriorityQueue<>();
-	
 	static int V, E, ROOT;
-	static int[] dist;
 	static List<Edge>[] adj;
+	static int[] minDist;
+	static boolean[] visited;
+	
+	static final int INF = Integer.MAX_VALUE;
+	
+	static void dijkstra() {
+		visited = new boolean[V+1];
+		
+		minDist = new int[V+1];
+		Arrays.fill(minDist, INF);
+		
+		minDist[ROOT] = 0;
+		
+		for (int i=0; i<V; i++) {
+			int u = -1;
+			int min = INF;
+			
+			for (int j=1; j<=V; j++) {
+				if (visited[j]) continue;
+				if (minDist[j] < min) {
+					min = minDist[j];
+					u = j;
+				}
+			}
+			
+			if (u == -1) break;
+			visited[u] = true;
+			
+			for (Edge e : adj[u]) {
+				int v = e.to;
+				if (minDist[v] > minDist[u] + e.w) {
+					minDist[v] = minDist[u] + e.w;
+				}
+			}
+		}
+		
+	}
 	
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
+		StringBuilder output = new StringBuilder();
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		V = Integer.parseInt(st.nextToken());
 		E = Integer.parseInt(st.nextToken());
 		
-		dist = new int[V+1];
-		Arrays.fill(dist, Integer.MAX_VALUE);
 		adj = new ArrayList[V+1];
 		for (int i=1; i<=V; i++) adj[i] = new ArrayList<>();
 		
@@ -46,26 +77,10 @@ public class Main {
 			adj[u].add(new Edge(v,w));
 		}
 		
-		dist[ROOT] = 0;
-		pq.offer(new Edge(ROOT, 0));
+		dijkstra();
 		
-		while(!pq.isEmpty()) {
-			Edge cur = pq.poll();
-			int u = cur.to;
-			
-			for (Edge next : adj[u]) {
-				int v = next.to;
-				int cost = cur.w + next.w;
-				
-				if (dist[v] <= cost) continue;
-				
-				dist[v] = cost;
-				pq.offer(new Edge(v, cost));
-			}
-		}
-		StringBuilder output = new StringBuilder();
 		for (int i=1; i<=V; i++) {
-			output.append((dist[i]==Integer.MAX_VALUE ? "INF" : dist[i])).append("\n");
+			output.append(minDist[i]==INF? "INF" : minDist[i]).append("\n");
 		}
 		System.out.println(output);
 		br.close();
