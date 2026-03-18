@@ -15,13 +15,11 @@ public class Main {
 			for (int i=0; i<word.length(); i++) {
 				int idx = word.charAt(i) - '0';
 				
-				if (cur.isEnd) return false;
 				if (cur.child[idx] == null) cur.child[idx] = new Node();
 				
 				cur = cur.child[idx];
+				if (cur.isEnd) return false;
 			}
-			
-			if (cur.isEnd) return false;
 			
 			for (int i=0; i<10; i++) {
 				if (cur.child[i] != null) return false;
