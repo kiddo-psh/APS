@@ -7,7 +7,7 @@ public class Main {
         int x = sc.nextInt();
         int[] dp = new int[x+1];
 
-        Arrays.fill(dp, 1_000_000);
+        Arrays.fill(dp, Integer.MAX_VALUE);
         dp[x] = 0;
 
         for (int i=x; i>0; i--) {
