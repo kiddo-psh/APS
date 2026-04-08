@@ -4,42 +4,39 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Solution {
-	static int N, L, result;
-	
-	static int[] score = new int[21];
-	static int[] calories = new int[21];
-	
-	static void dfs(int index, int s, int c) {
-		if (c > L) return;
-		if (index == N) {
-			result = Math.max(result, s);
-			return;
-		}
-		
-		dfs(index+1, s+score[index], c+calories[index]);
-		dfs(index+1, s, c);
-	}
-	
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		StringBuilder output = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int T = Integer.parseInt(br.readLine());
-		for (int tc=1; tc<=T; tc++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			N = Integer.parseInt(st.nextToken());
-			L = Integer.parseInt(st.nextToken());
-			
-			for (int i=0; i<N; i++) {
-				st = new StringTokenizer(br.readLine());
-				score[i] = Integer.parseInt(st.nextToken());
-				calories[i] = Integer.parseInt(st.nextToken());
-			}
-			
-			result = 0;
-			dfs(0, 0, 0);
-			
-			output.append("#").append(tc).append(" ").append(result).append("\n");
-		}
-		System.out.println(output);
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder output = new StringBuilder();
+        StringTokenizer st;
+
+        int T = Integer.parseInt(br.readLine());
+        for (int tc=1; tc<=T; tc++) {
+            st = new StringTokenizer(br.readLine());
+            int N = Integer.parseInt(st.nextToken());
+            int L = Integer.parseInt(st.nextToken());
+
+            int[][] foods = new int[N+1][2];
+
+            for (int i=1; i<=N; i++) {
+                st = new StringTokenizer(br.readLine());
+                foods[i][0] = Integer.parseInt(st.nextToken());
+                foods[i][1] = Integer.parseInt(st.nextToken());
+            }
+
+            int[][] dp = new int[N+1][L+1];
+            for (int i=1; i<=N; i++) {
+                for (int j=0; j<=L; j++) {
+                    int cal = foods[i][1];
+                    int score = foods[i][0];
+
+                    if (j < cal) dp[i][j] = dp[i-1][j];
+                    else dp[i][j] = Math.max(dp[i-1][j-cal]+score, dp[i-1][j]);
+                }
+            }
+
+            output.append("#").append(tc).append(" ").append(dp[N][L]).append("\n");
+        }
+        System.out.println(output);
+        br.close();
+    }
 }
