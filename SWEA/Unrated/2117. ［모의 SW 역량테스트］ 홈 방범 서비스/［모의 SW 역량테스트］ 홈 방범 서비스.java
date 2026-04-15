@@ -5,7 +5,10 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.StringTokenizer;
-
+/*
+# 메모리: 117,252 kb
+# 실행시간: 1,422 ms
+ */
 public class Solution {
     static int N, M, count;
     static int[][] town, dist;
@@ -32,9 +35,20 @@ public class Solution {
 
             count = 0;
 
-            for (int i=0; i<N; i++) {
-                for (int j=0; j<N; j++) {
-                    dfs(i,j,1);
+            for (int r=0; r<N; r++) {
+                for (int c=0; c<N; c++) {
+                    for (int k=1; k<=N+2; k++) {
+                        int cnt = 0;
+                        for (int i=0; i<N; i++) {
+                            for (int j=0; j<N; j++) {
+                                if (town[i][j]==1 && Math.abs(i-r)+Math.abs(j-c) < k) {
+                                    cnt++;
+                                }
+                            }
+                        }
+                        int cost = k*k + (k-1)*(k-1);
+                        if (cnt*M - cost >= 0) count = Math.max(count, cnt);
+                    }
                 }
             }
 
@@ -43,51 +57,5 @@ public class Solution {
 
         System.out.print(output);
         br.close();
-    }
-    static void dfs(int r, int c, int k) {
-        if (k==N+2) return;
-
-        int cost = k*k + (k-1)*(k-1);
-        cost *= -1;
-        int cnt = 0;
-
-        q.clear();
-        q.offer(new int[]{r,c});
-
-        for (int i=0; i<N; i++) Arrays.fill(dist[i], 0);
-        dist[r][c] = 1;
-
-        while (!q.isEmpty()) {
-            int[] cur = q.poll();
-            int cr = cur[0];
-            int cc = cur[1];
-
-            if (dist[cr][cc] > k) continue;
-            if (town[cr][cc] == 1) {
-                cost += M;
-                cnt++;
-            }
-
-            for (int d=0; d<4; d++) {
-                int nr = cr + dr[d];
-                int nc = cc + dc[d];
-
-                if (!inRange(nr, nc)) continue;
-                if (dist[nr][nc] != 0) continue;
-
-                dist[nr][nc] = dist[cr][cc]+1;
-                q.offer(new int[] {nr, nc});
-            }
-        }
-
-        if (cost >= 0) count = Math.max(count, cnt);
-        dfs(r, c, k+1);
-    }
-
-    static final int[] dr = {-1,1,0,0};
-    static final int[] dc = {0,0,-1,1};
-
-    static boolean inRange(int r, int c) {
-        return r>=0 && r<N && c>=0 && c<N;
     }
 }
