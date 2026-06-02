@@ -1,10 +1,10 @@
 # [level 1] 중요한 단어를 스포 방지 - 468370 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/468370?language=java) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/468370) 
 
 ### 성능 요약
 
-메모리: 61.1 MB, 시간: 3.13 ms
+메모리: 11.5 MB, 시간: 5.29 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 06월 01일 09:57:55
+2026년 06월 02일 10:04:32
 
 ### 문제 설명
 
